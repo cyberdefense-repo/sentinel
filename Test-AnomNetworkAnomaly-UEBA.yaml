@@ -1,0 +1,42 @@
+displayName: InR-AnomNetworkAnomaly-UEBA
+description: This algorithm detects unusually high volume of connections in network logs. It uses time series to decompose the data into seasonal, trend and residual components to calculate baseline. Any sudden large deviation from the historical baseline is considered as anomalous activity.
+severity: High
+enabled: true
+query: |-
+  Anomalies
+  | where TimeGenerated > ago(30m)
+  | where RuleName  contains "Unusual network volume anomaly"
+  | parse  parse_json(Entities)[0] with * 'Address":"' IP '","Location' *
+  | project-reorder TimeGenerated,StartTime,EndTime,RuleName,Description,UserName,IP,Score,Entities
+queryFrequency: PT5H
+queryPeriod: PT5H
+triggerOperator: GreaterThan
+triggerThreshold: 0
+suppressionDuration: PT5H
+suppressionEnabled: false
+startTimeUtc: 
+tactics: []
+techniques: []
+subTechniques: []
+alertRuleTemplateName: 
+incidentConfiguration:
+  createIncident: true
+  groupingConfiguration:
+    enabled: false
+    reopenClosedIncident: false
+    lookbackDuration: PT5H
+    matchingMethod: AllEntities
+    groupByEntities: []
+    groupByAlertDetails: []
+    groupByCustomDetails: []
+eventGroupingSettings:
+  aggregationKind: SingleAlert
+alertDetailsOverride: 
+customDetails: 
+entityMappings:
+- entityType: Account
+  fieldMappings:
+  - identifier: Name
+    columnName: UserName
+sentinelEntitiesMappings: 
+templateVersion: 
